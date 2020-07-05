@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Email, Length
 
 
 class SignupForm(FlaskForm):
+    """We are going to divide the process of creating forms into three phases: create the form class (in this file),
+    create the HTML template and implement the view that performs the function. """
     name = StringField('Name', validators=[DataRequired(), Length(max=64)])
     password = PasswordField('Password', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -15,3 +17,10 @@ class PostForm(FlaskForm):
     title_slug = StringField('Title slug', validators=[Length(max=128)])
     content = TextAreaField('Content')
     submit = SubmitField('Send')
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me')
+    submit = SubmitField('Login')
