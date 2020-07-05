@@ -1,9 +1,16 @@
+import json
+
 from flask import Flask, render_template
 from flask import request, redirect, url_for
 from forms import SignupForm, PostForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '9efa44ca9a8ab04a639b11dfa9268b8c2987ce15'
+with open('../../Documents/flask.json', 'r') as a:
+    keys_dict = json.loads(a.read())
+token = keys_dict['token'][0]
+
+app.config['SECRET_KEY'] = token
+a.close()
 
 posts = []
 
@@ -26,8 +33,10 @@ def post_form(post_id):
         title = form.title.data
         title_slug = form.title_slug.data
         content = form.content.data
+
         post = {'title': title, 'title_slug': title_slug, 'content': content}
         posts.append(post)
+
         return redirect(url_for('index'))
     return render_template("admin/post_form.html", form=form)
 
@@ -39,6 +48,7 @@ def show_signup_form():
         name = form.name.data
         email = form.email.data
         password = form.password.data
+
         next = request.args.get('next', None)
         if next:
             return redirect(next)
