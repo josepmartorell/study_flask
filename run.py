@@ -13,9 +13,18 @@ app = Flask(__name__)
 with open('../../Documents/flask.json', 'r') as a:
     keys_dict = json.loads(a.read())
 token = keys_dict['token'][0]
+
+# To configure the extension and connect to the database we have to
+# indicate the URI in the following format:
+# postgresql://<username>:<password>@<host>:<port>/<database_name>
+
 uri = keys_dict['uri'][0]
 
 app.config['SECRET_KEY'] = token
+
+# The URI is defined as an app configuration parameter by adding
+# the following after the line indicating the SECRET_KEY parameter:
+
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
