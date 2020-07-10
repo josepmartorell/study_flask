@@ -24,3 +24,11 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember me')
     submit = SubmitField('Login')
+
+
+class CommentForm(FlaskForm):
+    """
+    TRACE (comments) step 1: create form class for comments
+    """
+    content = TextAreaField('Content', validators=[DataRequired(), ])
+    submit = SubmitField('Comment')
