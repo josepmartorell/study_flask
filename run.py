@@ -1,13 +1,15 @@
 import json
 from os import abort
 
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 from flask import request, redirect, url_for
-from forms import SignupForm, PostForm, LoginForm
+from forms import SignupForm, PostForm, LoginForm, CommentForm
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 
 app = Flask(__name__)
 with open('../../Documents/flask.json', 'r') as a:
@@ -43,27 +45,41 @@ login_manager.login_view = "login"
 # the instance of our app
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # The import will be declared just after initializing the db object, otherwise the interpreter will complain
 # that it cannot find it.
 
-from models import User, Post
+from models import User, Post, Comment
 
 posts = []
 
 
 @app.route("/")
 def index():
+    current_app.logger.info('Showing blog posts')
     all_posts = Post.get_all()
     return render_template("index.html", posts=all_posts)
 
 
-@app.route("/p/<string:slug>/")
+@app.route("/p/<string:slug>/", methods=['GET', 'POST'])
 def show_post(slug):
+    """
+    TRACE (comments) step 4: changes introduced: process CommentForm form, which is done only in case the user is
+    authenticated and pass that form to the template
+        <-- TRACE (comments) step 5: Update template post_view.html -->
+    """
     post = Post.get_by_slug(slug)
-    if post is None:
+    if not post:
         abort(404)
-    return render_template("post_view.html", post=post)
+    form = CommentForm()
+    if current_user.is_authenticated and form.validate_on_submit():
+        content = form.content.data
+        comment = Comment(content=content, user_id=current_user.id,
+                          user_name=current_user.name, post_id=post.id)
+        comment.save()
+        return redirect(url_for('show_post', slug=post.title_slug))
+    return render_template("post_view.html", post=post, form=form)
 
 
 @app.route("/admin/post/", methods=['GET', 'POST'], defaults={'post_id': None})
