@@ -1,4 +1,5 @@
 import json
+from functools import wraps
 from os import abort
 
 from flask import Flask, render_template, current_app
@@ -9,7 +10,6 @@ from werkzeug.urls import url_parse
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
 
 app = Flask(__name__)
 with open('../../Documents/flask.json', 'r') as a:
@@ -55,6 +55,17 @@ from models import User, Post, Comment
 posts = []
 
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kws):
+        is_admin = getattr(current_user, 'is_admin', False)
+        if not is_admin:
+            abort()
+        return f(*args, **kws)
+
+    return decorated_function
+
+
 @app.route("/")
 def index():
     current_app.logger.info('Showing blog posts')
@@ -82,9 +93,18 @@ def show_post(slug):
     return render_template("post_view.html", post=post, form=form)
 
 
+@app.route("/admin/posts/")
+@login_required
+@admin_required
+def list_posts():
+    posts = Post.get_all()
+    return render_template("admin/posts.html", posts=posts)
+
+
 @app.route("/admin/post/", methods=['GET', 'POST'], defaults={'post_id': None})
 @app.route("/admin/post/<int:post_id>/", methods=['GET', 'POST'])
 @login_required
+@admin_required
 def post_form(post_id):
     """
     An administrator user must be authenticated in order to create entries. The way in which Flask-login allows
