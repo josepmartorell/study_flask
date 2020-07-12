@@ -120,6 +120,17 @@ def post_form(post_id):
     return render_template("admin/post_form.html", form=form)
 
 
+@app.route("/admin/post/delete/<int:post_id>/", methods=['POST', 'GET'])
+@login_required
+@admin_required
+def delete_post(post_id):
+    post = Post.get_by_id(post_id)
+    if post is None:
+        abort()
+    post.delete()
+    return redirect(url_for('index'))
+
+
 @app.route("/signup/", methods=["GET", "POST"])
 def show_signup_form():
     """The error variable is passed to the signup_form.html template. This variable contains an error message in case
