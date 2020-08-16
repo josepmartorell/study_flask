@@ -1,9 +1,24 @@
 {% extends "base_template.html" %}
-{% block title %}Flask tutorial: Miniblog{% endblock %}
+{% block title %}jtech.network{% endblock %}
 {% block content %}
     <ul>
-    {% for post in posts %}
-        <li><a href="{{ post.public_url() }}">{{ post.title }}</a></li>
+    {% for post in post_pagination.items %}
+        <li><a href="{{ url_for('show_post', slug=post.title_slug) }}">{{ post.title }}</a></li>
+    {% else %}
+        <li>No post entries/li>
     {% endfor %}
     </ul>
+    <div class=pagination>
+        {%- for page in post_pagination.iter_pages() %}
+            {% if page %}
+                {% if page != post_pagination.page %}
+                    <a href="{{ url_for('index', page=page) }}">{{ page }}</a>
+                {% else %}
+                    <strong>{{ page }}</strong>
+                {% endif %}
+            {% else %}
+                <span class=ellipsis>…</span>
+            {% endif %}
+        {%- endfor %}
+    </div>
 {% endblock %}
