@@ -69,8 +69,9 @@ def admin_required(f):
 @app.route("/")
 def index():
     current_app.logger.info('Showing blog posts')
-    all_posts = Post.get_all()
-    return render_template("index.html", posts=all_posts)
+    page = int(request.args.get('page', 1))
+    post_pagination = Post.all_paginated(page, 3)
+    return render_template("index.html", post_pagination=post_pagination)
 
 
 @app.route("/p/<string:slug>/", methods=['GET', 'POST'])
