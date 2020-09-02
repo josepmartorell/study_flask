@@ -16,7 +16,7 @@ Flask is a "micro" Framework written in Python and conceived to facilitate the d
      - _[flask-login](https://flask-login.readthedocs.io/en/latest/) Used for user and password authentication._
 
 # tutorials
-- The [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world/) whom I thank for his splendid work ;)
+- The [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) whom I thank for his splendid work ;)
 - Read [Flask Documentation](https://flask.palletsprojects.com/en/1.1.x/tutorial/) whose help is invaluable :))
 
 # license
